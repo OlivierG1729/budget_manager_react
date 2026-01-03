@@ -1,6 +1,6 @@
 # 💰 Budget Manager
 
-Une application moderne et élégante de gestion de budget personnel, construite avec React, Tailwind CSS et Supabase.
+Une application de gestion de budget personnel, construite avec React, Tailwind CSS et Supabase.
 
 ![Budget Manager Preview](https://via.placeholder.com/800x400/1a1a25/8b5cf6?text=Budget+Manager)
 
@@ -21,38 +21,38 @@ Une application moderne et élégante de gestion de budget personnel, construite
 - npm ou yarn
 - Un compte Supabase (gratuit)
 
-### 1. Clone le projet
+### 1. Cloner le projet
 
 ```bash
 git clone <ton-repo>
 cd budget-app
 ```
 
-### 2. Installe les dépendances
+### 2. Installer les dépendances
 
 ```bash
 npm install
 ```
 
-### 3. Configure Supabase
+### 3. Configurer Supabase
 
-1. Va sur [supabase.com](https://supabase.com) et connecte-toi
-2. Ouvre ton projet existant (ou crée-en un nouveau)
-3. Va dans **Settings → API**
-4. Copie :
+1. Aller sur [supabase.com](https://supabase.com) et connecte-toi
+2. Ouvrir le projet existant (ou en créer un nouveau)
+3. Aller dans **Settings → API**
+4. Copier :
    - **Project URL** (ex: `https://xxxxx.supabase.co`)
    - **anon/public key** (la clé publique, pas la secret !)
 
-### 4. Configure les variables d'environnement
+### 4. Configurer les variables d'environnement
 
-Crée un fichier `.env` à la racine du projet :
+Créer un fichier `.env` à la racine du projet :
 
 ```env
 VITE_SUPABASE_URL=https://rjwmpufueodmnbvnllst.supabase.co
 VITE_SUPABASE_ANON_KEY=ta_clé_anon_ici
 ```
 
-### 5. Lance l'application
+### 5. Lancer l'application
 
 ```bash
 npm run dev
@@ -72,21 +72,21 @@ Les fichiers seront générés dans le dossier `dist/`.
 
 ### Vercel (recommandé)
 
-1. Push ton code sur GitHub
-2. Va sur [vercel.com](https://vercel.com)
-3. Importe ton repo
-4. Ajoute les variables d'environnement :
+1. Push le code sur GitHub
+2. Aller sur [vercel.com](https://vercel.com)
+3. Importer le repo
+4. Ajouter les variables d'environnement :
    - `VITE_SUPABASE_URL`
    - `VITE_SUPABASE_ANON_KEY`
-5. Deploy !
+5. Deployer
 
 ### Netlify
 
-1. Push ton code sur GitHub
-2. Va sur [netlify.com](https://netlify.com)
+1. Push le code sur GitHub
+2. Aller sur [netlify.com](https://netlify.com)
 3. "Add new site" → "Import an existing project"
-4. Configure les variables d'environnement
-5. Deploy !
+4. Configurer les variables d'environnement
+5. Deployer
 
 ## 🗄️ Structure de la base de données
 
@@ -176,25 +176,21 @@ colors: {
 
 ### Catégories par défaut
 
-Modifie les catégories dans la table `categories` de Supabase.
+Modifier les catégories dans la table `categories` de Supabase.
 
 ## 🐛 Troubleshooting
 
 ### "Failed to fetch" ou erreurs réseau
 
-- Vérifie que ton projet Supabase n'est pas en pause
-- Vérifie les variables d'environnement
-- Vérifie que RLS (Row Level Security) est désactivé ou configuré
+- Vérifier que le projet Supabase n'est pas en pause
+- Vérifier les variables d'environnement
+- Vérifier que RLS (Row Level Security) est désactivé ou configuré
 
 ### Les données ne s'affichent pas
 
-- Ouvre la console du navigateur (F12) pour voir les erreurs
-- Vérifie que les tables existent dans Supabase
+- Ouvrir la console du navigateur (F12) pour voir les erreurs
+- Vérifier que les tables existent dans Supabase
 
-## 📝 License
 
-MIT — Fais-en ce que tu veux ! 🚀
 
----
 
-Fait avec 💜 par un crétin des alpes (et un génie aussi 😎)
