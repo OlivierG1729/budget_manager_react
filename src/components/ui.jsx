@@ -23,10 +23,10 @@ export function Button({
   }
 
   const sizes = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-5 py-2.5 text-sm',
-    lg: 'px-6 py-3 text-base',
-    xl: 'px-8 py-4 text-lg',
+    sm: 'px-3 py-1.5 text-xs',
+    md: 'px-4 py-2 text-sm',
+    lg: 'px-5 py-2.5 text-base',
+    xl: 'px-6 py-3 text-lg',
   }
 
   return (
@@ -62,23 +62,23 @@ export function Input({
   ...props 
 }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       {label && (
-        <label className="block text-sm font-medium text-gray-300">
+        <label className="block text-xs md:text-sm font-medium text-gray-300">
           {label}
         </label>
       )}
       <div className="relative">
         {Icon && (
-          <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+          <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-500" />
         )}
         <input
           className={`
             w-full bg-dark-700/50 border border-white/10 rounded-xl
-            px-4 py-3 text-white placeholder-gray-500
+            px-3 py-2.5 md:px-4 md:py-3 text-sm md:text-base text-white placeholder-gray-500
             focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20
             transition-all duration-300
-            ${Icon ? 'pl-12' : ''}
+            ${Icon ? 'pl-10 md:pl-12' : ''}
             ${error ? 'border-rose-500/50 focus:border-rose-500/50 focus:ring-rose-500/20' : ''}
             ${className}
           `}
@@ -86,7 +86,7 @@ export function Input({
         />
       </div>
       {error && (
-        <p className="text-sm text-rose-400">{error}</p>
+        <p className="text-xs text-rose-400">{error}</p>
       )}
     </div>
   )
@@ -102,16 +102,16 @@ export function Select({
   ...props 
 }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       {label && (
-        <label className="block text-sm font-medium text-gray-300">
+        <label className="block text-xs md:text-sm font-medium text-gray-300">
           {label}
         </label>
       )}
       <select
         className={`
           w-full bg-dark-700/50 border border-white/10 rounded-xl
-          px-4 py-3 text-white
+          px-3 py-2.5 md:px-4 md:py-3 text-sm md:text-base text-white
           focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20
           transition-all duration-300
           cursor-pointer
@@ -141,18 +141,18 @@ export function Toggle({ checked, onChange, label }) {
         aria-checked={checked}
         onClick={() => onChange(!checked)}
         className={`
-          w-12 h-6 rounded-full p-0.5
+          w-11 h-6 rounded-full p-0.5
           transition-colors duration-300
           ${checked ? 'bg-violet-600' : 'bg-dark-600'}
         `}
       >
         <motion.div
           className="w-5 h-5 bg-white rounded-full shadow-md"
-          animate={{ x: checked ? 24 : 0 }}
+          animate={{ x: checked ? 20 : 0 }}
           transition={{ type: 'spring', stiffness: 500, damping: 30 }}
         />
       </motion.button>
-      {label && <span className="text-sm text-gray-300">{label}</span>}
+      {label && <span className="text-xs md:text-sm text-gray-300">{label}</span>}
     </label>
   )
 }
@@ -172,7 +172,7 @@ export function Card({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={`
-        glass rounded-2xl p-6
+        glass rounded-xl md:rounded-2xl p-4 md:p-6
         ${hover ? 'glass-hover cursor-pointer' : ''}
         ${glow ? 'shadow-glow-violet' : ''}
         ${className}
@@ -207,12 +207,12 @@ export function Modal({ isOpen, onClose, title, children }) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-x-4 top-[10%] md:inset-0 z-50 md:flex md:items-center md:justify-center md:p-4"
           >
-            <div className="glass rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="glass rounded-2xl w-full md:max-w-lg max-h-[80vh] overflow-y-auto">
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-white/5">
-                <h2 className="text-xl font-semibold text-white">{title}</h2>
+              <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/5 sticky top-0 bg-dark-800/90 backdrop-blur-sm">
+                <h2 className="text-lg md:text-xl font-semibold text-white">{title}</h2>
                 <button
                   onClick={onClose}
                   className="p-2 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white transition-colors"
@@ -222,7 +222,7 @@ export function Modal({ isOpen, onClose, title, children }) {
               </div>
               
               {/* Content */}
-              <div className="p-6">
+              <div className="p-4 md:p-6">
                 {children}
               </div>
             </div>
@@ -244,11 +244,12 @@ export function Badge({ children, variant = 'default', className = '' }) {
     rose: 'bg-rose-500/20 text-rose-300',
     amber: 'bg-amber-500/20 text-amber-300',
     blue: 'bg-blue-500/20 text-blue-300',
+    cyan: 'bg-cyan-500/20 text-cyan-300',
   }
 
   return (
     <span className={`
-      px-3 py-1 rounded-full text-xs font-medium
+      px-2 py-0.5 md:px-3 md:py-1 rounded-full text-xs font-medium
       ${variants[variant]}
       ${className}
     `}>
@@ -258,9 +259,9 @@ export function Badge({ children, variant = 'default', className = '' }) {
 }
 
 // ============================================================
-// === Stat Card Component ====================================
+// === Stat Card Component (Mobile Optimized) =================
 // ============================================================
-export function StatCard({ icon, label, value, subvalue, trend, color = 'violet' }) {
+export function StatCard({ icon, label, value, subvalue, trend, color = 'violet', compact = false, className = '' }) {
   const colors = {
     violet: 'from-violet-600 to-indigo-600',
     emerald: 'from-emerald-600 to-teal-600',
@@ -278,7 +279,7 @@ export function StatCard({ icon, label, value, subvalue, trend, color = 'violet'
   }
 
   return (
-    <Card className="relative overflow-hidden group">
+    <Card className={`relative overflow-hidden group ${className}`}>
       {/* Background gradient on hover */}
       <div className={`
         absolute inset-0 bg-gradient-to-br ${colors[color]} opacity-0 
@@ -286,11 +287,11 @@ export function StatCard({ icon, label, value, subvalue, trend, color = 'violet'
       `} />
       
       <div className="relative">
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-2xl">{icon}</span>
+        <div className="flex items-center justify-between mb-2 md:mb-4">
+          <span className="text-lg md:text-2xl">{icon}</span>
           {subvalue && (
             <span className={`
-              px-3 py-1 rounded-full text-xs font-medium
+              px-2 py-0.5 rounded-full text-[10px] md:text-xs font-medium
               bg-gradient-to-r ${colors[color]} text-white
               shadow-lg ${glows[color]}
             `}>
@@ -299,12 +300,12 @@ export function StatCard({ icon, label, value, subvalue, trend, color = 'violet'
           )}
         </div>
         
-        <p className="text-gray-400 text-sm mb-1">{label}</p>
-        <p className="text-3xl font-bold text-white">{value}</p>
+        <p className="text-gray-400 text-xs md:text-sm mb-0.5 md:mb-1">{label}</p>
+        <p className={`${compact ? 'text-xl md:text-2xl' : 'text-2xl md:text-3xl'} font-bold text-white`}>{value}</p>
         
         {trend && (
-          <p className={`text-sm mt-2 ${trend > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-            {trend > 0 ? '↑' : '↓'} {Math.abs(trend)}% vs. mois dernier
+          <p className={`text-xs mt-1 md:mt-2 ${trend > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+            {trend > 0 ? '↑' : '↓'} {Math.abs(trend)}%
           </p>
         )}
       </div>
@@ -338,10 +339,10 @@ export function Spinner({ size = 'md' }) {
 // ============================================================
 export function EmptyState({ icon, title, description, action }) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 text-center">
-      <span className="text-6xl mb-4">{icon}</span>
-      <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
-      <p className="text-gray-400 max-w-sm mb-6">{description}</p>
+    <div className="flex flex-col items-center justify-center py-8 md:py-12 text-center px-4">
+      <span className="text-4xl md:text-6xl mb-3 md:mb-4">{icon}</span>
+      <h3 className="text-lg md:text-xl font-semibold text-white mb-1 md:mb-2">{title}</h3>
+      <p className="text-gray-400 text-sm max-w-sm mb-4 md:mb-6">{description}</p>
       {action}
     </div>
   )

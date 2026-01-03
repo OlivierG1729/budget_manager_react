@@ -1,33 +1,42 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Search, Filter, Edit2, Trash2, Calendar, Tag } from 'lucide-react'
+import { Plus, Search, Edit2, Trash2 } from 'lucide-react'
 import { Card, Button, Input, Select, Badge, Modal, Toggle, EmptyState } from './ui'
+
+// Color function
+const stringToColor = (str) => {
+  const colors = [
+    '#8b5cf6', '#10b981', '#f43f5e', '#f59e0b', '#3b82f6', 
+    '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#6366f1', 
+    '#14b8a6', '#a855f7', '#eab308', '#ef4444', '#22c55e',
+  ]
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash)
+    hash = hash & hash
+  }
+  return colors[Math.abs(hash) % colors.length]
+}
 
 export default function Expenses({ 
   depenses, 
   categories, 
   onAdd, 
   onUpdate, 
-  onDelete 
+  onDelete,
+  periodStart,
+  periodEnd 
 }) {
   const [showModal, setShowModal] = useState(false)
   const [editingExpense, setEditingExpense] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [filterCategory, setFilterCategory] = useState('')
-  const [filterType, setFilterType] = useState('')
 
   // Filter expenses
   const filteredExpenses = depenses.filter(d => {
     const matchesSearch = !searchTerm || 
       d.commentaire?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       d.categorie?.toLowerCase().includes(searchTerm.toLowerCase())
-    
-    const matchesCategory = !filterCategory || d.categorie === filterCategory
-    const matchesType = !filterType || 
-      (filterType === 'fixe' && d.est_fixe) ||
-      (filterType === 'variable' && !d.est_fixe)
-    
-    return matchesSearch && matchesCategory && matchesType
+    return matchesSearch
   })
 
   const handleOpenModal = (expense = null) => {
@@ -56,146 +65,130 @@ export default function Expenses({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+      <div className="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center">
         <div>
-          <h2 className="text-2xl font-bold text-white">Mes dépenses</h2>
-          <p className="text-gray-400">{filteredExpenses.length} transaction(s)</p>
+          <h2 className="text-xl md:text-2xl font-bold text-white">Mes dépenses</h2>
+          <p className="text-gray-400 text-sm">{filteredExpenses.length} transaction(s)</p>
         </div>
-        <Button onClick={() => handleOpenModal()}>
+        <Button onClick={() => handleOpenModal()} size="md">
           <Plus className="w-4 h-4" />
-          Nouvelle dépense
+          <span className="hidden sm:inline">Nouvelle dépense</span>
+          <span className="sm:hidden">Ajouter</span>
         </Button>
       </div>
 
-      {/* Filters */}
-      <Card>
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
-            <Input
-              icon={Search}
-              placeholder="Rechercher..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <Select
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-            options={[
-              { value: '', label: 'Toutes catégories' },
-              ...categories.map(c => ({ value: c.nom, label: c.nom }))
-            ]}
-            className="md:w-48"
-          />
-          <Select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            options={[
-              { value: '', label: 'Tous types' },
-              { value: 'fixe', label: '🔒 Fixes' },
-              { value: 'variable', label: '💸 Variables' },
-            ]}
-            className="md:w-40"
-          />
-        </div>
+      {/* Search */}
+      <Card className="p-3 md:p-4">
+        <Input
+          icon={Search}
+          placeholder="Rechercher..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
       </Card>
 
-      {/* Expenses List */}
-      <Card className="overflow-hidden p-0">
+      {/* Expenses List - Mobile optimized */}
+      <div className="space-y-2 md:space-y-3">
         {filteredExpenses.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-white/5">
-                  <th className="text-left text-gray-400 font-medium p-4 text-sm">Date</th>
-                  <th className="text-left text-gray-400 font-medium p-4 text-sm">Description</th>
-                  <th className="text-left text-gray-400 font-medium p-4 text-sm">Catégorie</th>
-                  <th className="text-left text-gray-400 font-medium p-4 text-sm">Type</th>
-                  <th className="text-right text-gray-400 font-medium p-4 text-sm">Montant</th>
-                  <th className="text-right text-gray-400 font-medium p-4 text-sm">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <AnimatePresence>
-                  {filteredExpenses.map((expense, index) => (
-                    <motion.tr
-                      key={expense.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ delay: index * 0.03 }}
-                      className="border-b border-white/5 hover:bg-white/[0.02] transition-colors"
+          <AnimatePresence>
+            {filteredExpenses.map((expense, index) => (
+              <motion.div
+                key={expense.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ delay: index * 0.03 }}
+              >
+                <Card className="p-3 md:p-4">
+                  <div className="flex items-center gap-3">
+                    {/* Icon */}
+                    <div 
+                      className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center text-base md:text-lg flex-shrink-0"
+                      style={{ 
+                        backgroundColor: `${stringToColor(expense.categorie)}20`,
+                      }}
                     >
-                      <td className="p-4 text-gray-300">
-                        {new Date(expense.date).toLocaleDateString('fr-FR')}
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          {expense.est_fixe && (
-                            <span title="Dépense fixe" className="text-rose-400">🔒</span>
-                          )}
-                          <span className="text-white">
-                            {expense.commentaire || '-'}
-                          </span>
+                      {expense.est_fixe ? '🔒' : '💸'}
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-white font-medium text-sm md:text-base truncate">
+                            {expense.commentaire || expense.categorie}
+                          </p>
+                          <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                            <Badge 
+                              variant="violet" 
+                              className="text-[10px] md:text-xs"
+                              style={{ 
+                                backgroundColor: `${stringToColor(expense.categorie)}20`,
+                                color: stringToColor(expense.categorie)
+                              }}
+                            >
+                              {expense.categorie}
+                            </Badge>
+                            <span className="text-gray-500 text-xs">
+                              {new Date(expense.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}
+                            </span>
+                            {expense.type_depense === 'Pro' && (
+                              <Badge variant="blue" className="text-[10px]">Pro</Badge>
+                            )}
+                          </div>
                         </div>
-                      </td>
-                      <td className="p-4">
-                        <Badge variant="violet">{expense.categorie}</Badge>
-                      </td>
-                      <td className="p-4">
-                        <Badge variant={expense.type_depense === 'Pro' ? 'blue' : 'emerald'}>
-                          {expense.type_depense}
-                        </Badge>
-                      </td>
-                      <td className="p-4 text-right">
-                        <span className="text-white font-semibold font-mono">
-                          {parseFloat(expense.montant).toFixed(2)} €
-                        </span>
-                      </td>
-                      <td className="p-4 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={() => handleOpenModal(expense)}
-                            className="p-2 rounded-lg hover:bg-violet-500/20 text-gray-400 hover:text-violet-400 transition-colors"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(expense.id)}
-                            className="p-2 rounded-lg hover:bg-rose-500/20 text-gray-400 hover:text-rose-400 transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+
+                        {/* Amount & Actions */}
+                        <div className="flex flex-col items-end gap-1">
+                          <p className="text-white font-bold text-base md:text-lg">
+                            {parseFloat(expense.montant).toFixed(0)} €
+                          </p>
+                          <div className="flex items-center gap-0.5">
+                            <button
+                              onClick={() => handleOpenModal(expense)}
+                              className="p-1.5 rounded-lg hover:bg-violet-500/20 text-gray-400 hover:text-violet-400 transition-colors"
+                            >
+                              <Edit2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(expense.id)}
+                              className="p-1.5 rounded-lg hover:bg-rose-500/20 text-gray-400 hover:text-rose-400 transition-colors"
+                            >
+                              <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                            </button>
+                          </div>
                         </div>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </AnimatePresence>
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         ) : (
-          <EmptyState
-            icon="📝"
-            title="Aucune dépense"
-            description="Commencez à suivre vos dépenses en ajoutant votre première transaction"
-            action={
-              <Button onClick={() => handleOpenModal()}>
-                <Plus className="w-4 h-4" />
-                Ajouter une dépense
-              </Button>
-            }
-          />
+          <Card>
+            <EmptyState
+              icon="📝"
+              title="Aucune dépense"
+              description="Ajoutez votre première transaction"
+              action={
+                <Button onClick={() => handleOpenModal()} size="sm">
+                  <Plus className="w-4 h-4" />
+                  Ajouter
+                </Button>
+              }
+            />
+          </Card>
         )}
-      </Card>
+      </div>
 
       {/* Add/Edit Modal */}
       <Modal
         isOpen={showModal}
         onClose={handleCloseModal}
-        title={editingExpense ? '✏️ Modifier la dépense' : '➕ Nouvelle dépense'}
+        title={editingExpense ? '✏️ Modifier' : '➕ Nouvelle dépense'}
       >
         <ExpenseForm
           expense={editingExpense}
@@ -233,7 +226,7 @@ function ExpenseForm({ expense, categories, onSubmit, onCancel }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <Input
         label="Montant (€)"
         type="number"
@@ -260,15 +253,15 @@ function ExpenseForm({ expense, categories, onSubmit, onCancel }) {
       />
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-300">Type</label>
-        <div className="flex gap-3">
+        <label className="block text-xs md:text-sm font-medium text-gray-300">Type</label>
+        <div className="flex gap-2">
           {['Perso', 'Pro'].map(t => (
             <button
               key={t}
               type="button"
               onClick={() => setForm({ ...form, type_depense: t })}
               className={`
-                flex-1 py-3 rounded-xl font-medium transition-all
+                flex-1 py-2.5 rounded-xl text-sm font-medium transition-all
                 ${form.type_depense === t
                   ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/25'
                   : 'bg-dark-700 text-gray-400 hover:bg-dark-600 hover:text-white'
@@ -292,15 +285,16 @@ function ExpenseForm({ expense, categories, onSubmit, onCancel }) {
       <Toggle
         checked={form.est_fixe}
         onChange={(checked) => setForm({ ...form, est_fixe: checked })}
-        label="🔒 Dépense fixe (loyer, abonnements...)"
+        label="🔒 Dépense fixe"
       />
 
-      <div className="flex gap-3 pt-4">
+      <div className="flex gap-3 pt-2">
         <Button
           type="button"
           variant="secondary"
           onClick={onCancel}
           className="flex-1"
+          size="md"
         >
           Annuler
         </Button>
@@ -308,6 +302,7 @@ function ExpenseForm({ expense, categories, onSubmit, onCancel }) {
           type="submit"
           loading={loading}
           className="flex-1"
+          size="md"
         >
           {expense ? 'Modifier' : 'Ajouter'}
         </Button>
